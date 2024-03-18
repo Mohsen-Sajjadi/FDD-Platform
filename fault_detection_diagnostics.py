@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 Created on Thu Mar 14 15:58:10 2024
 
 @author: MohsenSajjadi
 """
-
 import pandas as pd
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, dash_table
 import plotly.graph_objs as go
 import io
 import base64
 from pandas.errors import ParserError, EmptyDataError
 from dash.exceptions import PreventUpdate
-import dash_table
 import operator
 from datetime import datetime
 
@@ -24,12 +21,12 @@ app = dash.Dash(__name__)
 df = pd.DataFrame()
 
 OPERATORS = {
-    '>': operator.gt,
     '<': operator.lt,
-    '>=': operator.ge,
     '<=': operator.le,
     '==': operator.eq,
-    '!=': operator.ne
+    '!=': operator.ne,
+    '>=': operator.ge,
+    '>': operator.gt
 }
 
 # Define layout with dark theme
@@ -70,7 +67,7 @@ app.layout = html.Div(style={'backgroundColor': '#1E1E1E', 'color': '#FFFFFF', '
         dcc.Dropdown(
             id='control-points-dropdown',
             multi=True,
-            style={'color': '#000080', 'backgroundColor': '#black'}
+            style={'color': '#000080', 'backgroundColor': 'black'}
         )
     ], style={'marginLeft': '20px', 'marginRight': '20px', 'marginTop': '20px'}),
 
@@ -78,7 +75,34 @@ app.layout = html.Div(style={'backgroundColor': '#1E1E1E', 'color': '#FFFFFF', '
     dcc.Graph(id='control-points-graph', config={'scrollZoom': False}, style={'backgroundColor': '#202020', 'marginLeft': '20px', 'marginRight': '20px', 'marginTop': '20px'}),
 
     # Display selected points
-    html.Div(id='selected-points-output', style={'marginTop': '20px', 'marginLeft': '20px'})
+    html.Div(id='selected-points-output', style={'marginTop': '20px', 'marginLeft': '20px'}),
+    
+    # Display total time under condition
+    html.Div(id='time-under-condition', style={'marginTop': '20px', 'marginLeft': '20px'}),
+
+    # Input for desired value
+    html.Div([
+        html.Label('Desired Value:', style={'color': '#FFFFFF', 'fontWeight': 'bold'}),
+        dcc.Input(id='desired-value', type='text', value=None),
+    ], style={'marginLeft': '20px', 'marginRight': '20px', 'marginTop': '20px'}),
+
+    # Dropdown for selecting condition
+    html.Div([
+        html.Label('Condition:', style={'color': '#FFFFFF', 'fontWeight': 'bold'}),
+        dcc.Dropdown(
+            id='condition-dropdown',
+            options=[
+                {'label': 'Less Than', 'value': '<'},
+                {'label': 'Less Than or Equal To', 'value': '<='},
+                {'label': 'Equal To', 'value': '=='},
+                {'label': 'Not Equal To', 'value': '!='},
+                {'label': 'Greater Than or Equal To', 'value': '>='},
+                {'label': 'Greater Than', 'value': '>'}
+            ],
+            value='>',
+            style={'color': '#000080', 'backgroundColor': 'black'}
+        )
+    ], style={'marginLeft': '20px', 'marginRight': '20px', 'marginTop': '20px'}),
 ])
 
 # Callback to upload file and update dataframe
@@ -129,54 +153,48 @@ def update_output(contents, filename):
 
     return control_points, start_date, end_date, upload_button_label
 
-# Define callback to update graph based on selected control points and time frame
+# Callback to update graph based on selected control points and time frame
 @app.callback(
-    [
-        Output('control-points-graph', 'figure'),
-        Output('time-above-threshold', 'children'),
-    ],
-    [
-        Input('control-points-dropdown', 'value'),
-        Input('date-picker-range', 'start_date'),
-        Input('date-picker-range', 'end_date'),
-        Input('desired-value', 'value'),
-        Input('selected-operator', 'value'),
-    ]
+    Output('control-points-graph', 'figure'),
+    [Input('control-points-dropdown', 'value'),
+     Input('date-picker-range', 'start_date'),
+     Input('date-picker-range', 'end_date'),
+     Input('desired-value', 'value'),
+     Input('condition-dropdown', 'value')]
 )
-def update_control_points_graph(selected_control_points, start_date, end_date,desired_value,selected_operator):
+def update_control_points_graph(selected_control_points, start_date, end_date, desired_value, condition):
     if not selected_control_points or start_date is None or end_date is None:
         return {'data': [], 'layout': {}}
 
-    time_above_threshold = 0
     filtered_df = df.loc[start_date:end_date]
     traces = []
+    shapes = []
     # Add traces for selected control points
     for column in selected_control_points:
-
-
-        if desired_value is not None and selected_operator is not None:
-            desired_value = float(desired_value)
-            op = OPERATORS.get(selected_operator)
-            y_values = filtered_df[column].where(op(filtered_df[column], desired_value))
-
-            num_inputs_with_value = len(y_values[y_values.notnull()])
-            time_difference = filtered_df.index[1] - filtered_df.index[0]
-            time_difference_in_minutes = time_difference.total_seconds() / 60
-            time_above_threshold = num_inputs_with_value * time_difference_in_minutes
-
-
-        else:
-            y_values = filtered_df[column]
-
         trace = go.Scatter(
             x=filtered_df.index,
-            y=y_values,
+            y=filtered_df[column],
             mode='lines',
             name=column,
             hoverinfo='text',
             hovertemplate='%{y:.2f}'
         )
         traces.append(trace)
+        
+        if desired_value is not None and condition is not None and desired_value != '':
+            y_values = filtered_df[column]
+            indices = OPERATORS[condition](y_values, float(desired_value))
+            in_condition = False
+            for i, ind in enumerate(indices):
+                if ind and not in_condition:
+                    start = filtered_df.index[i]
+                    in_condition = True
+                    print(f"Start Time: {start}")
+                elif not ind and in_condition:
+                    end = filtered_df.index[i]
+                    in_condition = False
+                    print(f"End Time: {end}")
+                    shapes.append(dict(type="rect", xref="x", yref="paper", x0=start, y0=0, x1=end, y1=1, fillcolor="red", opacity=0.5, layer="below", line_width=0))
 
     layout = go.Layout(
         title='Trends of Control Points',
@@ -187,36 +205,59 @@ def update_control_points_graph(selected_control_points, start_date, end_date,de
         hovermode='x unified',
         plot_bgcolor='#202020',
         paper_bgcolor='#1E1E1E',
-        legend=dict(font=dict(color='#CCCCCC'))
+        legend=dict(font=dict(color='#CCCCCC')),
+        shapes=shapes
     )
 
-    return [
-        {'data': traces, 'layout': layout},
-        "Time above threshold: {0} minutes".format(time_above_threshold)
-        ]
+    return {'data': traces, 'layout': layout}
 
-# Define callback to display selected points
+# Define callback to display selected points and total time under condition
 @app.callback(
-    Output('selected-points-output', 'children'),
+    [Output('selected-points-output', 'children'),
+     Output('time-under-condition', 'children')],
     [Input('control-points-dropdown', 'value'),
      Input('date-picker-range', 'start_date'),
-     Input('date-picker-range', 'end_date')]
+     Input('date-picker-range', 'end_date'),
+     Input('desired-value', 'value'),
+     Input('condition-dropdown', 'value')]
 )
-def display_selected_points(selected_control_points, start_date, end_date):
-    if not selected_control_points or start_date is None or end_date is None:
-        return ''
+def display_selected_points(selected_control_points, start_date, end_date, desired_value, condition):
+    if not selected_control_points or start_date is None or end_date is None or condition is None or desired_value is None or desired_value == '':
+        return '', ''
 
     filtered_df = df.loc[start_date:end_date]
     selected_points_info = []
+    total_time_info = []
 
     for column in selected_control_points:
         if column in filtered_df.columns:
             # Calculate average with 2 decimal places
             average_value = round(filtered_df[column].mean(), 2)
 
+            # Calculate total time under condition
+            y_values = filtered_df[column]
+            indices = OPERATORS[condition](y_values, float(desired_value))
+            time_difference = filtered_df.index[1] - filtered_df.index[0]
+            time_difference_in_minutes = time_difference.total_seconds() / 60
+
+            # Initialize a counter for total time under condition
+            total_time_under_condition = 0
+            
+            # Iterate over the indices to calculate total time under condition
+            in_condition = False
+            for i, ind in enumerate(indices):
+                if ind and not in_condition:
+                    start_time = filtered_df.index[i]
+                    in_condition = True
+                elif not ind and in_condition:
+                    end_time = filtered_df.index[i]
+                    in_condition = False
+                    # Calculate time under condition for this interval and add it to the total
+                    total_time_under_condition += (end_time - start_time).total_seconds() / 60
+            total_time_info.append(html.Div(f"Total time under condition for {column}: {total_time_under_condition} minutes"))
+
             selected_points_info.append(html.Div([
                 html.H4(f"Selected Control Point: {column}"),
-                html.H4(id="time-above-threshold"),
                 dash_table.DataTable(
                     id={
                         'type': 'datatable',
@@ -234,31 +275,9 @@ def display_selected_points(selected_control_points, start_date, end_date):
                     style_cell={'textAlign': 'left', 'backgroundColor': '#343A40', 'color': '#FFFFFF'},
                     style_header={'backgroundColor': '#007BFF', 'fontWeight': 'bold'}
                 ),
-                html.Div([
-                    html.Label('Desired Value:', style={'color': '#FFFFFF', 'fontWeight': 'bold'}),
-                    dcc.Input(id='desired-value', type='text', value=None),
-                    html.Label('Select Condition:', style={'color': '#FFFFFF', 'fontWeight': 'bold', 'marginRight': '10px'}),
-                    dcc.Dropdown(
-                    id='selected-operator',
-                    style={'width': '150px', 'color': '#000000'},  # Color set to black
-                    options=[
-                        {'label': 'Greater Than', 'value': '>'},
-                        {'label': 'Less Than', 'value': '<'},
-                        {'label': 'Greater or equal', 'value': '>='},
-                        {'label': 'Less or equal', 'value': '<='},
-                        {'label': 'Equal', 'value': '=='},
-                        {'label': 'Not equal', 'value': '!='}
-                    ],
-
-                    value='None'
-                    )
-                ], style={'display': 'flex', 'alignItems': 'center'})
             ]))
 
-    return selected_points_info
-
-
-
+    return selected_points_info, total_time_info
 
 # Run the app
 if __name__ == '__main__':

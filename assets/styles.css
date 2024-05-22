@@ -1,0 +1,287 @@
+/* Body */
+body {
+    background-color: #272727; /* Dark background color */
+    color: #FFFFFF; /* Light text color */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    background-color: #343A40; /* Darker background color for header */
+    color: #FFFFFF; /* Light text color */
+    padding: 20px 40px; /* More space for the header */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    max-width: 200px; /* Adjust logo size */
+    margin-right: auto; /* Move logo to the left side */
+}
+
+/* Upload container */
+.upload-container {
+    margin: 20px auto; /* Center container */
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    background-color: #292929; /* Darker container background color */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+/* Date picker */
+.date-picker .DateInput, 
+.date-picker .DateInput_input {
+    border: 1px solid #373738; /* Gray border color */
+    border-radius: 4px;
+    background-color: #2c3035; /* Background color */
+    color: #FFFFFF; /* Text color */
+}
+
+/* Control points graph */
+.control-points-graph {
+    margin-top: 20px;
+}
+
+/* Selected points output */
+.selected-points-output {
+    margin-top: 20px;
+}
+
+/* Time under condition */
+.time-under-condition {
+    margin-top: 20px;
+}
+
+/* Desired value */
+.desired-value {
+    margin-top: 20px;
+    font-size: 18px; /* Increase font size for better visibility */
+    font-weight: bold; /* Emphasize the text */
+    color: #FFFFFF; /* Updated text color */
+    text-transform: uppercase; /* Uppercase text for a consistent style */
+    border-bottom: 2px solid #007BFF; /* Add a bottom border for visual separation */
+    padding-bottom: 12px; /* Add padding to the bottom for spacing */
+}
+
+/* Condition dropdown */
+.condition-dropdown .form-control {
+    background-color: #343A40; /* Background color */
+    color: #FFFFFF; /* Text color */
+    border: 1px solid #FFFFFF; /* Border color */
+    border-radius: 8px; /* Rounded corners */
+}
+
+/* Buttons */
+.btn {
+    background-color: #007BFF; /* Button background color */
+    color: #FFFFFF; /* Button text color */
+    border: none;
+    padding: 12px 22px; /* Adjusted padding */
+    cursor: pointer;
+    border-radius: 10px; /* Rounded corners */
+    transition: background-color 0.3s ease;
+    text-transform: uppercase; /* Uppercase text */
+    font-size: 14px; /* Font size */
+    display: inline-block;
+    text-align: center;
+    width: auto; /* Ensure all buttons have the same width */
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker color on hover */
+}
+
+.btn-primary {
+    background-color: #007BFF; /* Primary button background color */
+    color: #FFFFFF; /* Button text color */
+}
+
+.btn-danger {
+    background-color: #DC3545; /* Danger button background color */
+    color: #FFFFFF; /* Button text color */
+}
+
+.btn-secondary {
+    background-color: #6C757D; /* Secondary button background color */
+    color: #FFFFFF; /* Button text color */
+}
+
+/* Modal */
+.modal-header {
+    background-color: #343A40; /* Modal header background color */
+    color: #FFFFFF; /* Modal header text color */
+    border-bottom: none; /* Remove border */
+}
+
+.modal-body {
+    background-color: #292929; /* Modal body background color */
+    color: #FFFFFF; /* Modal body text color */
+}
+
+.modal-footer {
+    background-color: #343A40; /* Modal footer background color */
+    border-top: none; /* Remove border */
+}
+
+/* Dropdown */
+.dropdown-menu .form-control {
+    background-color: #343A40; /* Background color */
+    color: #FFFFFF; /* Text color */
+    border: 1px solid #6d7681; /* Border color */
+    border-radius: 8px; /* Border radius */
+    padding: 12px 16px; /* Padding */
+    width: 100%; /* Width */
+    font-size: 14px; /* Font size */
+}
+
+.dropdown-menu .form-control:hover {
+    border-color: #007BFF; /* Border color on hover */
+}
+
+.dropdown-menu .form-control:focus {
+    border-color: #007BFF; /* Border color on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus shadow */
+}
+
+.dropdown-menu .Dropdown-option {
+    background-color: #000000; /* Option background color */
+    color: #FFFFFF; /* Option text color */
+    font-weight: bold; /* Bold text */
+}
+
+.dropdown-menu .Dropdown-option:hover {
+    background-color: #007BFF; /* Option background color on hover */
+    color: #FFFFFF; /* Option text color on hover */
+    font-weight: bold; /* Bold text */
+}
+
+.dropdown-menu .Dropdown-option.is-selected {
+    background-color: #6C757D; /* Selected option background color */
+    color: #FFFFFF; /* Selected option text color */
+    font-weight: bold; /* Bold text */
+}
+
+/* Adding styles for all select dropdowns */
+select {
+    background-color: #343A40; /* Background color */
+    color: #FFFFFF; /* Text color */
+    padding: 12px; /* Padding for aesthetic spacing */
+    border-radius: 8px; /* Rounded corners */
+    border: 2px solid #6C757D; /* Gray border color */
+}
+
+/* Tabs */
+.dash-tab--selected {
+    border-top-color: #007BFF; /* Color for the selected tab */
+}
+
+.dash-tab--selected a {
+    color: #007BFF; /* Text color for the selected tab */
+}
+
+.dash-tabs {
+    background-color: #343A40; /* Background color for tabs */
+}
+
+.dash-tab {
+    border-top-color: #6C757D; /* Color for the unselected tab */
+}
+
+.dash-tab a {
+    color: #6C757D; /* Text color for the unselected tab */
+}
+
+/* Custom CSS to style the dropdown indicator */
+.custom-dropdown-indicator {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.custom-dropdown-indicator svg {
+    fill: #FFFFFF; /* Color of the dropdown indicator */
+}
+
+/* Align buttons to the left and in one line */
+.buttons-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Modernize date picker and reduce frame size */
+.modern-datepicker .DateInput {
+    width: auto; /* Adjust width to auto */
+    border: 1px solid #313877;
+    border-radius: 4px;
+    padding: 8px;
+    display: inline-block; /* Display inline-block to fit content */
+}
+
+.modern-datepicker .DateInput_input {
+    width: auto; /* Adjust width to auto */
+    padding: 4px 8px; /* Adjust padding for smaller size */
+    font-size: 14px; /* Adjust font size */
+    border: none;
+}
+
+.modern-datepicker .CalendarDay__selected, .modern-datepicker .CalendarDay__selected:hover {
+    background: #007bff;
+    border: 1px double #007bff;
+}
+
+.modern-datepicker .CalendarDay__today, .modern-datepicker .CalendarDay__today:hover {
+    background: #f8f9fa;
+    border: 1px double #f8f9fa;
+}
+
+.modern-datepicker .CalendarDay {
+    border: 1px solid #dee2e6;
+    padding: 4px;
+    font-size: 14px;
+}
+
+/* Upload button */
+#upload-button {
+    margin-top: 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* File name output */
+#file-name-output {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #cccccc;
+}
+
+/* Select menu */
+.Select-menu-outer, .Select-menu, .Select-control {
+    background-color: #ffffff !important;
+    color: rgb(5, 5, 5) !important;
+}
+
+.Select--multi .Select-value {
+    background-color: #535353 !important;
+    color: white !important;
+}
+
+.Select--multi .Select-value-label {
+    color: white !important;
+}
+
+.Select-placeholder {
+    color: white !important;
+}
